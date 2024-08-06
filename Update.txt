@@ -1,0 +1,4 @@
+Version B 1.3
+- Update Er / Posts
+- Chart Curves
+- Screenshoot and Download Buttons

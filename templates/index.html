@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css"
+        integrity="sha512-BnbUDfEUfV0Slx6TunuB042k9tuKe3xrD6q4mg5Ed72LTgzDIcLPxg6yI2gcMFRyomt+yJJxE+zJwNmxki6/RA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700&family=Poppins:wght@100;300;400;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap4.min.css">
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>CBN 360 - Dashboard</title>
+</head>
+
+<body>
+    <div class="container-fluid loading" id="loading">
+        <div class="row d-flex vh-100 align-items-center text-center justify-content-center">
+            <div class="card card-loading">
+                <div class="card-body">
+                    <div class="spinner-border" role="status">
+                    </div>
+                    <p class="pt-2">Getting data from: <span id="showValue"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand mb-5">
+                    <img src="/static/assets/cretivox-black.png" alt="" />
+                </li>
+                <li class="active">
+                    <a href="#">
+                        <i class="fab fa-instagram"></i>
+                        Instagram
+                    </a>
+                </li>
+                <li class="">
+                    <a href="#" disabled>
+                        <i class="fab fa-youtube"></i>
+                        Youtube
+                    </a>
+                </li>
+                <li class="">
+                    <a href="#" class="text-danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div id="mybutton">
+                    <a href="#menu-tootle" id="menu-toggle" class="btn btn-secondary feedback">Hide or Show menu</a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card card-heading">
+                            <div class="card-body">
+                                <h4>Welcome to Instagram Analytics</h4>
+                                <!-- <a href="#menu-tootle" id="menu-toggle" class="btn btn-secondary"><i class="fa fa-expand" aria-hidden="true"></i></a> -->
+                                <!-- <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a> -->
+                            </div>
+                        </div>
+                        <section id="opening">
+                            <div class="card card-opening">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col col-lg-12">
+                                            {% with messages = get_flashed_messages() %}
+                                            {% if messages %}
+                                            {% for message in messages %}
+                                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                <strong>Hai Vox</strong> {{ message }}
+                                                <button type="button" class="close" data-dismiss="alert"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            {% endfor%}
+                                            {% endif %}
+                                            {% endwith%}
+                                            {% block body %}{% endblock %}
+                                        </div>
+                                        <div class="col-lg-5 text-center">
+                                            <img src="https://cdn.pixabay.com/photo/2016/12/04/18/58/instagram-1882330_640.png"
+                                                alt="">
+                                            <h4><strong>Instagram Analytics</strong></h4>
+                                            <p>Beta Version 1.3</p>
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <form action="{{ url_for('ig')}}" method="post"
+                                                onsubmit="return submitform()">
+                                                <div class="form-group">
+                                                    <label for="usernameIg">Username Instagram</label>
+                                                    <input name="fname" type="text" class="form-control" id="usernameIg"
+                                                        aria-describedby="emailHelp" placeholder="Enter username"
+                                                        required>
+                                                    <small id="emailHelp" class="form-text text-muted">Input only
+                                                        username instagram, example "cretivox".</small>
+                                                </div>
+                                                <button type="submit" class="btn royal btn-block btn-lg">Submit</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    {% if user_image %}
+                    <div class="download-container col-lg-12 p-0">
+                        <div class="col-lg-12 py-2">
+                            <div class="card">
+                                <div class="card-body profile-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-lg-3">
+                                            <img class="profile-picture" src="{{user_image}}" width="150" alt="">
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <div class="first py-md-3">
+                                                <h4><strong>{{usrname}}</strong></h4>
+                                                <p><a href="{{url}}">{{url}}</a></p>
+                                            </div>
+                                            <p class="biography" id="biography"><strong>Bio:</strong>{{bio}}</p>
+                                        </div>
+                                        <div class="col-lg-1 py-2 py-lg-0">
+                                            <a href=""><i class="fas fa-download fa-2x downloader download-btn"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-12">
+                            <div class="row py-lg-1">
+                                <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                    <div class="card card-grid">
+                                        <div class="card-body">
+                                            <p class="list-text"><i class="fas fa-user-friends icon-list"></i>Followers:
+                                            </p>
+                                            <p class="data-static">
+                                                {{followers}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                    <div class="card card-grid">
+                                        <div class="card-body">
+                                            <p class="list-text"><i class="fas fa-photo-video icon-list"></i>Media
+                                                Count:
+                                            </p>
+                                            <p class="data-static">
+                                                {{media_count}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                    <div class="card card-grid">
+                                        <div class="card-body">
+                                            <p class="list-text"><i class="fas fa-percentage icon-list"></i>Egm Rate:
+                                            </p>
+                                            <p class="data-static">
+                                                {{engagement_ig}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                    <div class="card card-grid">
+                                        <div class="card-body">
+                                            <p class="list-text"><i class="fas fa-thumbs-up icon-list"></i>Avg Likes:
+                                            </p>
+                                            <p class="data-static">
+                                                {{avg_like}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="card h-100 card-chart">
+                                <div class="card-body">
+                                    <p>
+                                    <div>
+                                        <canvas id="myChart"></canvas>
+                                        <button id="fetchdata" class="btn royal" onclick="updateChart()">Fetch
+                                            Data</button>
+                                    </div>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 pt-lg-4 pt-sm-4 pt-2">
+                        <div class="card card-heading">
+                            <div class="card-body">
+                                <h4>Latest 12 Posts:</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Caption</th>
+                                                <th scope="col">Link</th>
+                                                <th scope="col">Dates</th>
+                                                <th scope="col">Like</th>
+                                                <th scope="col">Comments</th>
+                                                <th scope="col">Views</th>
+                                                <th scope="col">ER Post</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="table-row">
+                                                <td scope="row">1</td>
+                                                <td class="box">{{caption_1}}</td>
+                                                <td><a href="{{link_1}}" target="_blank">Link</a></td>
+                                                <td>{{date_1}}</td>
+                                                <td>{{like_1}}</td>
+                                                <td>{{comment_1}}</td>
+                                                <td>{{view_1}}</td>
+                                                <td>{{ER_1}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">2</td>
+                                                <td class="box">{{caption_2}}</td>
+                                                <td><a href="{{link_2}}" target="_blank">Link</a></td>
+                                                <td>{{date_2}}</td>
+                                                <td>{{like_2}}</td>
+                                                <td>{{comment_2}}</td>
+                                                <td>{{view_2}}</td>
+                                                <td>{{ER_2}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">3</td>
+                                                <td class="box">{{caption_3}}</td>
+                                                <td><a href="{{link_3}}" target="_blank">Link</a></td>
+                                                <td>{{date_3}}</td>
+                                                <td>{{like_3}}</td>
+                                                <td>{{comment_3}}</td>
+                                                <td>{{view_3}}</td>
+                                                <td>{{ER_3}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">4</td>
+                                                <td class="box">{{caption_4}}</td>
+                                                <td><a href="{{link_4}}" target="_blank">Link</a></td>
+                                                <td>{{date_4}}</td>
+                                                <td>{{like_4}}</td>
+                                                <td>{{comment_4}}</td>
+                                                <td>{{view_4}}</td>
+                                                <td>{{ER_4}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">5</td>
+                                                <td class="box">{{caption_5}}</td>
+                                                <td><a href="{{link_5}}" target="_blank">Link</a></td>
+                                                <td>{{date_5}}</td>
+                                                <td>{{like_5}}</td>
+                                                <td>{{comment_5}}</td>
+                                                <td>{{view_5}}</td>
+                                                <td>{{ER_5}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">6</td>
+                                                <td class="box">{{caption_6}}</td>
+                                                <td><a href="{{link_6}}" target="_blank">Link</a></td>
+                                                <td>{{date_6}}</td>
+                                                <td>{{like_6}}</td>
+                                                <td>{{comment_6}}</td>
+                                                <td>{{view_6}}</td>
+                                                <td>{{ER_6}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">7</td>
+                                                <td class="box">{{caption_7}}</td>
+                                                <td><a href="{{link_7}}" target="_blank">Link</a></td>
+                                                <td>{{date_7}}</td>
+                                                <td>{{like_7}}</td>
+                                                <td>{{comment_7}}</td>
+                                                <td>{{view_7}}</td>
+                                                <td>{{ER_7}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">8</td>
+                                                <td class="box">{{caption_8}}</td>
+                                                <td><a href="{{link_8}}" target="_blank">Link</a></td>
+                                                <td>{{date_8}}</td>
+                                                <td>{{like_8}}</td>
+                                                <td>{{comment_8}}</td>
+                                                <td>{{view_8}}</td>
+                                                <td>{{ER_8}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">9</td>
+                                                <td class="box">{{caption_9}}</td>
+                                                <td><a href="{{link_9}}" target="_blank">Link</a></td>
+                                                <td>{{date_9}}</td>
+                                                <td>{{like_9}}</td>
+                                                <td>{{comment_9}}</td>
+                                                <td>{{view_9}}</td>
+                                                <td>{{ER_9}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">10</td>
+                                                <td class="box">{{caption_10}}</td>
+                                                <td><a href="{{link_10}}" target="_blank">Link</a></td>
+                                                <td>{{date_10}}</td>
+                                                <td>{{like_10}}</td>
+                                                <td>{{comment_10}}</td>
+                                                <td>{{view_10}}</td>
+                                                <td>{{ER_10}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">11</td>
+                                                <td class="box">{{caption_11}}</td>
+                                                <td><a href="{{link_11}}" target="_blank">Link</a></td>
+                                                <td>{{date_11}}</td>
+                                                <td>{{like_11}}</td>
+                                                <td>{{comment_11}}</td>
+                                                <td>{{view_11}}</td>
+                                                <td>{{ER_11}}</td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td scope="row">12</td>
+                                                <td class="box">{{caption_12}}</td>
+                                                <td><a href="{{link_12}}" target="_blank">Link</a></td>
+                                                <td>{{date_12}}</td>
+                                                <td>{{like_12}}</td>
+                                                <td>{{comment_12}}</td>
+                                                <td>{{view_12}}</td>
+                                                <td>{{ER_12}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="" id="created-element" style="visibility: hidden;" />
+                    {% else %}
+                    <div class="col-lg-12 py-2">
+                        <div class="card">
+                            <div class="card-body profile-card">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-3">
+                                        <img class="profile-picture" src="https://via.placeholder.com/150x150"
+                                            width="150" alt="">
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <div class="first py-md-3">
+                                            <h4><strong>No Data</strong></h4>
+                                            <p><a href="">No Data</a></p>
+                                        </div>
+                                        <p class="biography" id="biography"><strong>Bio:</strong> -</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-12">
+                        <div class="row py-lg-1">
+                            <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                <div class="card card-grid">
+                                    <div class="card-body">
+                                        <p class="list-text"><i class="fas fa-user-friends icon-list"></i>Followers:</p>
+                                        <p class="data-static">
+                                            -
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                <div class="card card-grid">
+                                    <div class="card-body">
+                                        <p class="list-text"><i class="fas fa-photo-video icon-list"></i>Media Count:
+                                        </p>
+                                        <p class="data-static">
+                                            -
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                <div class="card card-grid">
+                                    <div class="card-body">
+                                        <p class="list-text"><i class="fas fa-percentage icon-list"></i>Egm Rate:</p>
+                                        <p class="data-static">
+                                            -
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-6 col-12 col-md-6">
+                                <div class="card card-grid">
+                                    <div class="card-body">
+                                        <p class="list-text"><i class="fas fa-thumbs-up icon-list"></i>Avg Likes:</p>
+                                        <p class="data-static">
+                                            -
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="card h-100 card-chart">
+                            <div class="card-body">
+                                <p>
+                                <div>
+                                    <canvas id="myChart"></canvas>
+                                </div>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+
+            </div>
+            <!-- /#page-content-wrapper -->
+        </div>
+        <!-- /#wrapper -->
+        <!-- Button trigger modal -->
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.0.0.slim.js"
+            integrity="sha256-Gp6hp0H+A7axg1tErCucWeOc38irtkVWpUbBZSj8KCg=" crossorigin="anonymous"></script>
+        <script src="/static/js/index.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+        <script>
+
+        </script>
+    </div>
+</body>
+
+</html>
